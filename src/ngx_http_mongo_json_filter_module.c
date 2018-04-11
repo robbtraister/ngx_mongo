@@ -628,7 +628,7 @@ next:
             bson = bson->parent;
             ctx->bson = bson;
 
-            if (ctx->length) {
+            if (ctx->length > 0) {
                 if (bson == NULL) {
                    NGX_HTTP_MONGO_JSON_ENSURE(1);
                    *out->last++ = ',';
