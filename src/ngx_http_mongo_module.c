@@ -1356,7 +1356,7 @@ ngx_http_mongo_process_header(ngx_http_request_t *r)
     u = r->upstream;
 
     u->headers_in.status_n = NGX_HTTP_OK;
-    u->headers_in.content_length_n = (int32_t) b->pos[0]
+    u->headers_in.content_length_n = *((int32_t*) b->pos)
                                      - NGX_HTTP_MONGO_RES_HEADER_SIZE;
 
     if (u->headers_in.content_length_n) {
