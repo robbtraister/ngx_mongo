@@ -678,7 +678,7 @@ static ngx_chain_t *
 ngx_http_mongo_create_predefined_request(ngx_http_request_t *r, ngx_int_t id,
     ngx_int_t flush)
 {
-    ngx_http_mongo_ctx_t  *mctx;
+    // ngx_http_mongo_ctx_t  *mctx;
     ngx_chain_t           *cl, *head;
     ngx_buf_t             *b;
 
@@ -686,7 +686,7 @@ ngx_http_mongo_create_predefined_request(ngx_http_request_t *r, ngx_int_t id,
                    "mongo: create predefined request: \"%V\" (flush: %d)",
                    &ngx_http_mongo_predefined[id].json, flush);
 
-    mctx = ngx_http_get_module_ctx(r, ngx_http_mongo_module);
+    // mctx = ngx_http_get_module_ctx(r, ngx_http_mongo_module);
 
     /* header */
     cl = ngx_http_mongo_create_header(r, &ngx_http_mongo_opcodes[0],
