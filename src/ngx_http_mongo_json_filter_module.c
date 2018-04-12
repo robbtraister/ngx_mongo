@@ -361,6 +361,7 @@ ngx_http_mongo_bson_to_json(ngx_http_request_t *r, ngx_chain_t *in)
     ngx_buf_t                  *b, *out;
     u_char                     *p;
     size_t                      size;
+    uint32_t                    i;
     double                      vald;
     int8_t                      val8;
     int32_t                     val32;
@@ -513,6 +514,53 @@ next:
                 break;
 
             case NGX_HTTP_MONGO_BSON_STRING:
+                if (ctx->copy == 0) {
+                    NGX_HTTP_MONGO_BSON_READ(ctx->copy, 1);
+
+                    NGX_HTTP_MONGO_JSON_ENSURE(1);
+                    *out->last++ = '"';
+                }
+
+                size = ngx_min((size_t) ngx_buf_size(b), (size_t) ctx->copy);
+
+                if (size == 0) {
+                    continue;
+                }
+
+                NGX_HTTP_MONGO_JSON_ENSURE(size);
+
+                // quotes = 0;
+                for (i = 0; i < size; i++) {
+                    switch (b->pos[i]) {
+                        case '"':
+                            *out->last++ = '\\';
+                            *out->last++ = '"';
+                            break;
+                        case '\t':
+                            *out->last++ = '\\';
+                            *out->last++ = 't';
+                            break;
+                        case '\n':
+                            *out->last++ = '\\';
+                            *out->last++ = 'n';
+                            break;
+                        default:
+                            *out->last++ = b->pos[i];
+                    }
+                }
+
+                ctx->copy -= size;
+
+                bson->consumed += size;
+                b->pos += size;
+
+                if (ctx->copy > 0) {
+                    continue;
+                }
+
+                *(out->last - 1) = '"'; /* rewrite trailing '\0' */
+                break;
+
             case NGX_HTTP_MONGO_BSON_JAVASCRIPT:
             case NGX_HTTP_MONGO_BSON_SYMBOL:
                 if (ctx->copy == 0) {
